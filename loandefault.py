@@ -70,8 +70,8 @@ def train(X, y, model = 'linear', hyperparamter = 0):
 
 def gradient_descent(X, y, stepsize, gradient_function):
     n, d = X.shape
-    theta = np.zeros((d, 1))  # right now starts from 0; possibly changed to random to avoid local minimum
-    precision = 0.01 * stepsize
+    theta = np.ones((d, 1))  # right now starts from 1; possibly changed to random to avoid local minimum
+    precision = 10**-5
     max_iteration = 10000
     curr_iteration = 0
     while curr_iteration < max_iteration:
@@ -97,7 +97,7 @@ def linear_reg_gradient(X, y, theta):
 
     pred = np.matmul(X, theta)
     for i in range(pred.size):
-        # if pred[i] < 0 : pred[i] = 0
+        if pred[i] < 0 : pred[i] = 0
         pred[i] -= y[i]
     return np.matmul(np.transpose(X), pred) / n
 
@@ -109,7 +109,7 @@ def linear_reg_train(X_train, y_train, X_test, y_test):
 
     # training
     gradient = lambda X, y, theta: linear_reg_gradient(X, y, theta)
-    theta = gradient_descent(X_train, y_train, 2 * (10**-7), gradient)
+    theta = gradient_descent(X_train, y_train, 2 * (10**-9), gradient)
 
     # with theta acquired from training, calculate rmse
     n, d = X_test.shape
