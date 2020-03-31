@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import math
 
+
 # read the first nrows rows of training data
 # to read the whole file set nrows = 0
 # returns data and labels in type of array
@@ -14,7 +15,8 @@ def read_train_data(filename, nrows=0):
         X = pd.read_csv(filename, sep=',', warn_bad_lines=True, error_bad_lines=True, low_memory=False, nrows=nrows)
     X = np.asarray(X.values, dtype=float)
     X = fill_nan(X)
-    data = np.asarray(X[:, 1:-4], dtype=float)
+    # data = np.asarray(X[:, 1:-4], dtype=float)
+    data = np.asarray(X[:, 1:5], dtype=float)  # just use figure 1-5 for basic testing for now
     labels = np.asarray(X[:, -1], dtype=float)
     return data, labels
 
@@ -66,12 +68,48 @@ def train(X, y, model = 'linear', hyperparamter = 0):
     return sum(rmse) / k
 
 
-# train the model using X_train, y_train
+def gradient_descent(X, y, stepsize, gradient_function):
+    n, d = X.shape
+    theta = np.zeros((d, 1))  # right now starts from 0; possibly changed to random to avoid local minimum
+    precision = 0.01 * stepsize
+    max_iteration = 10000
+    curr_iteration = 0
+    while curr_iteration < max_iteration:
+        grad = gradient_function(X, y, theta)
+        step = stepsize * grad
+        # print(step)
+        theta = np.subtract(theta, step)
+        if np.linalg.norm(step) < precision:
+            print(f'converged after {curr_iteration} iterations')
+            break
+
+        if curr_iteration < 10 or curr_iteration % 100 == 0:
+            print(f'iter={curr_iteration}, norm(step)={np.linalg.norm(step)}, norm(theta)={np.linalg.norm(theta)}')
+            # print(theta)
+        curr_iteration += 1
+    if curr_iteration >= max_iteration:
+        print(f'unable to converge after {curr_iteration} iterations')
+    return theta
+
+
+def linear_reg_gradient(X, y, theta):
+    n, d = X.shape
+
+    pred = np.matmul(X, theta)
+    for i in range(pred.size):
+        # if pred[i] < 0 : pred[i] = 0
+        pred[i] -= y[i]
+    return np.matmul(np.transpose(X), pred) / n
+
+
+# train the linear regression model using X_train, y_train
 # test on X_test, y_test, returns rmse
 def linear_reg_train(X_train, y_train, X_test, y_test):
     n, d = X_train.shape
-    # TODO: implement training 
-    theta = np.zeros((d, 1))
+
+    # training
+    gradient = lambda X, y, theta: linear_reg_gradient(X, y, theta)
+    theta = gradient_descent(X_train, y_train, 2 * (10**-7), gradient)
 
     # with theta acquired from training, calculate rmse
     n, d = X_test.shape
