@@ -1,22 +1,29 @@
-1000 samples
-SVR kernel ='linear
-C=0.1
-train rmse 5.241311557400478 test rmse 2.74162396020603
-train rmse 4.970271982380472 test rmse 4.326365349203993
-train rmse 3.9842942555206258 test rmse 7.352488239746933
-train rmse 4.763366695515025 test rmse 5.162004200938994
-train rmse 5.158684037251684 test rmse 3.317854211722618
-C=1
-train rmse 5.227243225325076 test rmse 2.746842761848229
-train rmse 4.956051406851746 test rmse 4.325441000407599
-train rmse 3.971371504069398 test rmse 7.351603269226793
-train rmse 4.744042117706064 test rmse 5.154837276006769
-train rmse 5.1442131111405525 test rmse 3.3150708153102464
 
-10000 samples
-C=0.1
-train rmse 4.468803085335106 test rmse 4.362889443209024
-train rmse 4.539263979784799 test rmse 4.061699716358944
-train rmse 4.212242962367194 test rmse 5.2863207702118515
-train rmse 4.480541910131481 test rmse 4.314612772991312
-train rmse 4.530222817004162 test rmse 4.101911772395206
+I use Muyuan's code for preprocessing and cross-validation 
+and use liblinear for SVM(method: linear kernel, L2-regularized L2 loss-regression,primal)
+(trained with all data, it takes over 30 min for each trail, don't know why it takes so long....)
+
+
+1.Fill in NaN with Min Value of the column:
+
+C    average train rmse     average test rmse: 
+0.1  4.301397378798692      4.336372884230711
+1    4.296399121184862      4.343235821679049     
+10   4.293777657621699      4.34821242837995
+
+
+2.Fill in NaN with Mean Value of the column:
+
+C    average train rmse     average test rmse: 
+0.1  4.301786314661359      4.336093151690685
+1    4.296842949247696      4.342860642412218    
+10   4.2941233044908635     4.347844061397778  1#
+
+note:
+1#  Training error in each validation is not always smaller than test error
+ the following 5-fold data is an example
+train rmse 4.267106489850619 test rmse 4.471225094574512
+train rmse 4.299314056394179 test rmse 4.346457593941912
+train rmse 4.29156413178786 test rmse 4.381341775182711
+train rmse 4.3092501343065654 test rmse 4.308430652623304
+train rmse 4.341696760967573 test rmse 4.173010642130983
