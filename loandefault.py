@@ -3,6 +3,13 @@ import numpy as np
 import math
 from sklearn.linear_model import LinearRegression
 
+"""
+To change to native model: Line 155 - 157
+To change max iteration: Line 109
+To change the way to fill in NaN value: Line 60
+To change step size / precision: Line 155
+"""
+
 
 # read the first nrows rows of training data
 # to read the whole file set nrows = 0
@@ -22,6 +29,7 @@ def read_train_data(filename, nrows=0):
     # Normalize every column of data so that it ranges from 0 to 1
     data_normed = (data - data.min(0)) / data.ptp(0)
     labels = np.asarray(X[:, -1], dtype=float)
+    labels = np.reshape(labels, (-1, 1))
     return data_normed, labels
 
 
@@ -43,11 +51,16 @@ def read_test_data(filename, nrows=0):
     return None
 
 
-# to fill in the NAN values with the average of that column
+# to fill in the NAN values
 def fill_nan(data):
     col_mean = np.nanmean(data, axis=0)
+    col_min = np.nanmin(data, axis=0)
+    col_max = np.nanmax(data, axis=0)
+    col_median = np.nanmedian(data, axis=0)
+    use = col_min
     inds = np.where(np.isnan(data))
-    data[inds] = np.take(col_mean, inds[1])
+    data[inds] = np.take(use, inds[1])  # Fill in NaN with <use>
+    # data[inds] = 0  # Fill in NaN with 0
     return data
 
 
@@ -56,6 +69,7 @@ def fill_nan(data):
 def train(X, y, model = 'linear', hyperparamter = 0):
     # for training data X, y, applying 5-fold cross-validation
     k = 5
+    train_rmse = []
     rmse = []
     # divide them into training set (X1, y1) and test set(X2, y2)
     for i in range(k):
@@ -66,26 +80,33 @@ def train(X, y, model = 'linear', hyperparamter = 0):
         y1 = y[S_list]
         X2 = X[T_list, :]
         y2 = y[T_list]
-
+        print(f'======== {k}-fold: Iteration {i} ========')
         # calls the corresponding function that trains the model using X1, y1
         # and evaluate the performance on X2, y2
         if model == 'linear':
-            rmse_linear = linear_reg_train(X1, y1, X2, y2)
-            print(f'rmse={rmse_linear}')
-            rmse.append(rmse_linear)
+            train_rmse_linear, test_rmse_linear = linear_reg_train(X1, y1, X2, y2)
+            # print(f'rmse={rmse_linear}')
+            train_rmse.append(train_rmse_linear)
+            rmse.append(test_rmse_linear)
+
 
     # return average rmse
-    return sum(rmse) / k
+    avg_train_rmse = sum(train_rmse) / k
+    avg_rmse = sum(rmse) / k
+    print()
+    print(f'++++ Result ++++')
+    print(f'Model: {model}, average train rmse: {avg_train_rmse}, average test rmse: {avg_rmse}')
+    print()
+    return avg_rmse
 
 
-def gradient_descent(X, y, stepsize, gradient_function, starting_theta = None):
+def gradient_descent(X, y, stepsize, precision, gradient_function, starting_theta = None):
     n, d = X.shape
     theta = starting_theta
     if starting_theta is None:
         theta = np.ones((d, 1))  # right now starts from 1; possibly changed to random to avoid local minimum
 
-    precision = 1
-    max_iteration = 10000
+    max_iteration = 500
     curr_iteration = 0
     while curr_iteration < max_iteration:
         grad = gradient_function(X, y, theta)
@@ -96,15 +117,20 @@ def gradient_descent(X, y, stepsize, gradient_function, starting_theta = None):
             print(f'converged after {curr_iteration} iterations')
             break
 
-        if curr_iteration < 10 or curr_iteration % 100 == 0:
+        if curr_iteration < 5 or curr_iteration % 100 == 0:
             print(f'iter={curr_iteration}, norm(step)={np.linalg.norm(step)}, norm(theta)={np.linalg.norm(theta)}')
             #             # print(theta)
+        if curr_iteration == 4:
+            print("......")
         curr_iteration += 1
     if curr_iteration >= max_iteration:
-        print(f'unable to converge after {curr_iteration} iterations')
+        print(f'unable to converge into {precision} after {curr_iteration} iterations, norm(step): {np.linalg.norm(step)}')
     return theta
 
 
+"""
+This part is for linear regression with max(theta*x, 0)
+"""
 def linear_reg_gradient(X, y, theta):
     n, d = X.shape
     pred = np.matmul(X, theta)
@@ -116,36 +142,56 @@ def linear_reg_gradient(X, y, theta):
 
 
 # train the linear regression model using X_train, y_train
-# test on X_test, y_test, returns rmse
+# test on X_test, y_test, returns train rmse and test rmse
 def linear_reg_train(X_train, y_train, X_test, y_test):
     n, d = X_train.shape
 
     # training
-    reg = LinearRegression()
+    reg = LinearRegression(fit_intercept=False)
     reg.fit(X_train, y_train)
     reg_theta = np.asarray(reg.coef_)
     reg_theta = np.reshape(reg_theta, (-1, 1))
     gradient = lambda a, b, t: linear_reg_gradient(a, b, t)
-    theta = gradient_descent(X_train, y_train, 1 * (10**-6), gradient, reg_theta)
-    # theta = reg_theta
-    # theta = np.zeros((d, 1))
+    theta = gradient_descent(X_train, y_train, stepsize=1 * 10**-7, precision=1 * 10**-4, gradient_function=gradient, starting_theta=reg_theta)
+    # theta = reg_theta  # normal linear regression
+    # theta = np.zeros((d, 1))  # native model
 
     # with theta acquired from training, calculate rmse
+    # sqrt( 0.5 * (y_pred - y) ** 2 )
+
+    """Training error calculation"""
+    y_pred = X_train.dot(theta)
+    y_pred = np.maximum(y_pred, np.zeros((n, 1)))
+    train_abs_error = np.subtract(y_pred, y_train)
+    train_abs_error_value = np.sum(np.abs(train_abs_error)) / n
+    print(f'TRAIN: Mean Absolute Error = {train_abs_error_value}')
+    train_mse = np.square(train_abs_error)
+    train_mse_value = np.sum(train_mse) / n
+    train_rmse_value = math.sqrt(train_mse_value)
+
+    print(f'TRAIN: Root Mean Square Error = {train_rmse_value}')
+    print()
+
+    """Test error calculation"""
     n, d = X_test.shape
-    mse = 0
-    for i in range(n):
-        mse += error_calc(X_test[i, :].dot(theta), y_test[i])
-    return math.sqrt(mse)
+    y_pred = X_test.dot(theta)
+    y_pred = np.maximum(y_pred, np.zeros((n, 1)))
+    abs_error = np.subtract(y_pred, y_test)
+    abs_error_value = np.sum(np.abs(abs_error)) / n
+    print(f'TEST: Mean Absolute Error = {abs_error_value}')
+    mse = np.square(abs_error)
+    mse_value = np.sum(mse) / n
+    rmse_value = math.sqrt(mse_value)
 
-
-def error_calc(pred_label, actual_label):
-    return (max(pred_label, 0) - actual_label) ** 2
+    print(f'TEST: Root Mean Square Error = {rmse_value}')
+    print()
+    return train_rmse_value, rmse_value
 
 
 if __name__ == '__main__':
     train_file_name = 'train_v2.csv'
     # test_file_name = 'test_v2.csv'
-    X, y = read_train_data(train_file_name, 24000) # read the first <num> rows of training data
+    X, y = read_train_data(train_file_name, 0) # read the first <num> rows of training data
     # X_test = read_test_data(test_file_name, 10000) # read the first 10000 rows of test data
 
     # experiment with different models / hyperparameters, observes rmse
