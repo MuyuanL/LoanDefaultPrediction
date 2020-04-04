@@ -3,13 +3,6 @@ import numpy as np
 import math
 from sklearn.linear_model import LinearRegression
 
-"""
-To change to native model: Line 155 - 157
-To change max iteration: Line 109
-To change the way to fill in NaN value: Line 60
-To change step size / precision: Line 155
-"""
-
 
 # read the first nrows rows of training data
 # to read the whole file set nrows = 0
@@ -69,6 +62,10 @@ def fill_nan(data):
 def train(X, y, model = 'linear', hyperparamter = 0):
     # for training data X, y, applying 5-fold cross-validation
     k = 5
+    n, d = X.shape
+    # control the sample size
+    # X = X[0:math.floor(0.25*n), :]
+    # y = y[0:math.floor(0.25*n)]
     train_rmse = []
     rmse = []
     # divide them into training set (X1, y1) and test set(X2, y2)
@@ -152,7 +149,7 @@ def linear_reg_train(X_train, y_train, X_test, y_test):
     reg_theta = np.asarray(reg.coef_)
     reg_theta = np.reshape(reg_theta, (-1, 1))
     gradient = lambda a, b, t: linear_reg_gradient(a, b, t)
-    theta = gradient_descent(X_train, y_train, stepsize=1 * 10**-7, precision=1 * 10**-4, gradient_function=gradient, starting_theta=reg_theta)
+    theta = gradient_descent(X_train, y_train, stepsize=1 * 10**-7, precision=1 * 10**-5, gradient_function=gradient, starting_theta=reg_theta)
     # theta = reg_theta  # normal linear regression
     # theta = np.zeros((d, 1))  # native model
 
@@ -176,6 +173,7 @@ def linear_reg_train(X_train, y_train, X_test, y_test):
     n, d = X_test.shape
     y_pred = X_test.dot(theta)
     y_pred = np.maximum(y_pred, np.zeros((n, 1)))
+    y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
     abs_error = np.subtract(y_pred, y_test)
     abs_error_value = np.sum(np.abs(abs_error)) / n
     print(f'TEST: Mean Absolute Error = {abs_error_value}')
@@ -191,7 +189,7 @@ def linear_reg_train(X_train, y_train, X_test, y_test):
 if __name__ == '__main__':
     train_file_name = 'train_v2.csv'
     # test_file_name = 'test_v2.csv'
-    X, y = read_train_data(train_file_name, 0) # read the first <num> rows of training data
+    X, y = read_train_data(train_file_name, 0)  # read the first <num> rows of training data
     # X_test = read_test_data(test_file_name, 10000) # read the first 10000 rows of test data
 
     # experiment with different models / hyperparameters, observes rmse
