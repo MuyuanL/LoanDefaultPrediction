@@ -1,0 +1,48 @@
+(Run on entire dataset, 5-fold)
+(last 3 columns are categorical and are removed: f776, f77, f778)
+(columns that only have a single value are removed)
+
+Step Size: 10^-7
+
+>Fill in NaN with Average Value of the column:
+Iteration		avg_train_rmse	avg_test_rmse
+Native		4.394391670312053	4.393435573450781
+0 (linear reg)	4.175895135580289	4.230717186722628
+100		4.175195476277887	4.229769052987516
+500		4.174676184589549	4.2290667054569955
+1000		4.174324637946723	4.228598107050017
+
+>Fill in NaN with Min Value of the column:
+Iteration		avg_train_rmse	avg_test_rmse
+Native		4.394391670312053	4.393435573450781
+0 (linear reg)	4.173174244406271	4.229356069345572
+100		4.172458187906587	4.228436940414448
+500		4.1719382442171	4.227749052554858
+1000		4.171590700657143	4.2272924494513004
+
+>With 500 Iterations:
+NaN-Filled-With	avg_train_rmse	avg_test_rmse
+0		4.172378858038895	555486.4674022227 (#1)
+Min(column)	4.1719382442171	4.227749052554858
+Max(column)	4.176365666495544	68.94313514330625 (#2)
+Avg(column)	4.174676184589549	4.2290667054569955
+Median(column)	4.172577900868437	9.658667416090973 (#3)
+
+======================================
+#1: When NaN filled with 0, the avg_test_rmse are below:
+fold 1:	4.420345740938417
+fold 2:	4.190190229809576
+fold 3:	4.2564008094796
+fold 4:	4.146260096896146
+fold 5:	2777415.323814236 (train_rmse=4.2034943454231595)
+
+#2: When NaN filled with max value in the column, the avg_test_rmse are below:
+fold 1:	4.420273712255763
+fold 2:	4.188201779041044
+fold 3:	4.262584253810434
+fold 4:	327.7143736851112 (train_rmse=4.194800432829668)
+fold 5:	4.130242286312784
+
+#3: When NaN filled with max value in the column, for the 4th fold:
+train_rmse:	4.192233585238443
+test_rmse:		31.30065209040814
