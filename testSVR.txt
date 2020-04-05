@@ -5,19 +5,37 @@ and use liblinear for SVM(method: linear kernel, L2-regularized L2 loss-regressi
 
 
 1.Fill in NaN with Min Value of the column:
-
+train with all data
 C    average train rmse     average test rmse: 
 0.1  4.301397378798692      4.336372884230711
 1    4.296399121184862      4.343235821679049     
 10   4.293777657621699      4.34821242837995
 
+C=0.1
+# of sample   average train rmse     average test rmse:
+N/4           4.275936976592172,     4.33900287251436
+N/2           4.354970189203754,     4.397700643684954
+3N/4          4.366123418281041,     4.402817896213778
+N             4.301397378798692      4.336372884230711
+
 
 2.Fill in NaN with Mean Value of the column:
-
+train with all data
 C    average train rmse     average test rmse: 
 0.1  4.301786314661359      4.336093151690685
 1    4.296842949247696      4.342860642412218    
 10   4.2941233044908635     4.347844061397778  1#
+
+
+C=0.1
+# of sample   average train rmse     average test rmse:
+N/4           4.276901878020738     4.338682270249951
+N/2           4.354009162357068      4.398250210891763
+3N/4          4.366089958816978      4.402794653950837
+N             4.301786314661359      4.336093151690685
+
+
+
 
 note:
 1#  Training error in each validation is not always smaller than test error
