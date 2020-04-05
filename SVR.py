@@ -21,7 +21,7 @@ To change step size / precision: Line 155
 # read the first nrows rows of training data
 # to read the whole file set nrows = 0
 # returns data and labels in type of array
-def read_train_data(filename, nrows=0):
+def read_train_data(filename, nrows=0,frac=1):
     X = pd.DataFrame()
     if nrows <= 0:
         for chunk in pd.read_csv(filename, sep=',', warn_bad_lines=False, error_bad_lines=False, low_memory=False, chunksize=10000):
@@ -29,6 +29,8 @@ def read_train_data(filename, nrows=0):
     else:
         X = pd.read_csv(filename, sep=',', warn_bad_lines=False, error_bad_lines=False, low_memory=False, nrows=nrows)
     X = np.asarray(X.values, dtype=float)
+    n,d= X.shape
+    X=X[0:math.floor(frac*n/4),:]
     X = fill_nan(X)
     data = np.asarray(X[:, 1:-4], dtype=float)
     data = data[:, ~np.all(data[1:] == data[:-1], axis=0)]
@@ -64,7 +66,7 @@ def fill_nan(data):
     col_min = np.nanmin(data, axis=0)
     col_max = np.nanmax(data, axis=0)
     col_median = np.nanmedian(data, axis=0)
-    use = col_mean
+    use = col_min
     inds = np.where(np.isnan(data))
     data[inds] = np.take(use, inds[1])  # Fill in NaN with <use>
     # data[inds] = 0  # Fill in NaN with 0
@@ -107,12 +109,12 @@ def train(X, y, model = 'linear', hyperparamter = 0):
 def svr_train(X_train, y_train, X_test, y_test):
     n1, d1 = X_train.shape
     n2, d2 = X_test.shape
-    
+  
     #y1 = list(np.reshape(y_train,(1,-1)))
     #y2 = list(np.reshape(y_test,(1,-1)))
     y1=np.squeeze(y_train)
     y2=np.squeeze(y_test)
-    #print(len(y1))
+    
 #    scaler = StandardScaler()
 #    scaler=MinMaxScaler(feature_range=(0, 1))
 #    X_train = scaler.fit_transform(X_train)
@@ -144,8 +146,13 @@ def svr_train(X_train, y_train, X_test, y_test):
 if __name__ == '__main__':
     train_file_name = 'train_v2.csv'
     # test_file_name = 'test_v2.csv'
-    X, y = read_train_data(train_file_name, 0) # read the first <num> rows of training data
-    # X_test = read_test_data(test_file_name, 10000) # read the first 10000 rows of test data
-
-    # experiment with different models / hyperparameters, observes rmse
-    linear_rmse = train(X, y, model='svr')
+    X1, y1 = read_train_data(train_file_name, 0,1) # read the first <num> rows of training data   
+    linear_rmse = train(X1, y1, model='svr')
+    X2, y2 = read_train_data(train_file_name, 0,2) # read the first <num> rows of training data   
+    linear_rmse = train(X2, y2, model='svr')
+    X3, y3 = read_train_data(train_file_name, 0,3) # read the first <num> rows of training data   
+    linear_rmse = train(X3, y3, model='svr')
+    X4, y4 = read_train_data(train_file_name, 0,4) # read the first <num> rows of training data   
+    linear_rmse = train(X4, y4, model='svr')
+#    X, y = read_train_data(train_file_name, 50000) # read the first <num> rows of training data   
+#    linear_rmse = train(X, y, model='svr')
