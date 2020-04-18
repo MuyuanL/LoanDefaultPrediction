@@ -100,6 +100,12 @@ def train(X, y, model='linear', hyperparamter=0.0, verbose=False, data_size=1000
             train_rmse.append(train_rmse_lasso)
             validation_rmse.append(validation_rmse_lasso)
             test_rmse.append(test_rmse_lasso)
+        elif model == 'svr':
+            train_rmse_svr, validation_rmse_svr, test_rmse_svr \
+                = svr_train(X1, y1, X2, y2, X_test, y_test, hyperparamter, verbose=verbose)
+            train_rmse.append(train_rmse_svr)
+            validation_rmse.append(validation_rmse_svr)
+            test_rmse.append(test_rmse_svr)
 
     avg_train_rmse = sum(train_rmse) / k
     avg_validation_rmse = sum(validation_rmse) / k
@@ -107,6 +113,54 @@ def train(X, y, model='linear', hyperparamter=0.0, verbose=False, data_size=1000
     return avg_train_rmse, avg_validation_rmse, avg_test_rmse
 
 
+"""
+This part is for SVR
+"""
+def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose):
+    """TODO: Train the model using X_train, y_train, and c_value"""
+
+    """Training error calculation"""
+    n, d = X_train.shape
+    y_pred = np.zeros((n, 1))  # TODO: replace the right side with your prediction on X_train
+    y_pred = np.maximum(y_pred, np.zeros((n, 1)))
+    y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
+    train_abs_error = np.subtract(y_pred, y_train)
+    train_mse = np.square(train_abs_error)
+    train_mse_value = np.sum(train_mse) / n
+    train_rmse_value = math.sqrt(train_mse_value)
+
+    """Validation error calculation"""
+    n, d = X_vali.shape
+    y_pred = np.zeros((n, 1))  # TODO: replace the right side with your prediction on X_vali
+    y_pred = np.maximum(y_pred, np.zeros((n, 1)))
+    y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
+    vali_abs_error = np.subtract(y_pred, y_vali)
+    vali_mse = np.square(vali_abs_error)
+    vali_mse_value = np.sum(vali_mse) / n
+    vali_rmse_value = math.sqrt(vali_mse_value)
+
+    """Test error calculation"""
+    n, d = X_test.shape
+    y_pred = np.zeros((n, 1))  # TODO: replace the right side with your prediction on X_test
+    y_pred = np.maximum(y_pred, np.zeros((n, 1)))
+    y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
+    abs_error = np.subtract(y_pred, y_test)
+    mse = np.square(abs_error)
+    mse_value = np.sum(mse) / n
+    rmse_value = math.sqrt(mse_value)
+
+    if verbose:
+        print()
+        print(f'TRAINING: Root Mean Square Error = {train_rmse_value}')
+        print(f'VALIDATION: Root Mean Square Error = {vali_rmse_value}')
+        print(f'TEST: Root Mean Square Error = {rmse_value}')
+        print()
+    return train_rmse_value, vali_rmse_value, rmse_value
+
+
+"""
+Below are implementation for 3 regression models
+"""
 def gradient_descent(X, y, stepsize, precision, gradient_function, value_function, starting_theta=None, hyperparameter=0, max_iter=500, verbose=False):
     n, d = X.shape
     theta = starting_theta
@@ -374,7 +428,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--linear", help="run linear regression model", action="store_true")
     parser.add_argument("-r", "--ridge", type=float, help="run ridge regression model with hyperparameter")
-    parser.add_argument("-s", "--lasso", type=float, help="run LASSO regression model with hyperparameter")
+    parser.add_argument("-a", "--lasso", type=float, help="run LASSO regression model with hyperparameter")
+    parser.add_argument("-s", "--svr", type=float, help="run SVR model with SVR as C")
     parser.add_argument("-v", "--verbose", help="run with debug output", action="store_true")
     parser.add_argument("-f", "--file", help="data file path. Default is \'train_v2.csv\'")
     parser.add_argument("-n", "--fill", help="method to fill NaN value", choices=["mean", "min", "max", "median"])
@@ -414,20 +469,30 @@ if __name__ == '__main__':
     if args.ridge is not None and args.ridge >= 0:
         train_err, valid_err, test_err = train(X, y, model='ridge', hyperparamter=args.ridge, verbose=args.verbose,
                                                data_size=training_data_size, step_size=step, precision=precision, max_iter=max_iter)
-        print('=====Result=====')
+        print('=======Result=======')
         print(f'model=ridge, fill={fill}, lambda={args.ridge}')
         print(f'training rmse:\t{train_err}')
         print(f'validation rmse:\t{valid_err}')
         print(f'test rmse:\t{test_err}')
-        print('================')
+        print('====================')
     if args.lasso is not None and args.lasso >= 0:
         train_err, valid_err, test_err = train(X, y, model='lasso', hyperparamter=args.lasso, verbose=args.verbose,
                                                data_size=training_data_size, step_size=step, precision=precision, max_iter=max_iter)
-        print('=====Result=====')
+        print('=======Result=======')
         print(f'model=lasso, fill={fill}, lambda={args.lasso}')
         print(f'training rmse:\t{train_err}')
         print(f'validation rmse:\t{valid_err}')
         print(f'test rmse:\t{test_err}')
-        print('================')
+        print('====================')
+
+    if args.svr is not None:
+        train_err, valid_err, test_err = train(X, y, model='svr', hyperparamter=args.svr, verbose=args.verbose,
+                                               data_size=training_data_size)
+        print('=======Result=======')
+        print(f'model=svr, fill={fill}, C={args.svr}')
+        print(f'training rmse:\t{train_err}')
+        print(f'validation rmse:\t{valid_err}')
+        print(f'test rmse:\t{test_err}')
+        print('====================')
 
 
