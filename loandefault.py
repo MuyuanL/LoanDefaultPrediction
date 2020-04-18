@@ -20,6 +20,10 @@ def read_train_data(filename, nrows=0, fill='min'):
         X = pd.read_csv(filename, sep=',', warn_bad_lines=False, error_bad_lines=False, low_memory=False, nrows=nrows)
     X = np.asarray(X.values, dtype=float)
     X = fill_nan(X, fill)
+    # shuffling the data
+    np.random.seed(514)
+    np.random.shuffle(X)
+
     data = np.asarray(X[:, 1:-4], dtype=float)
     data = data[:, ~np.all(data[1:] == data[:-1], axis=0)]
     # data = np.asarray(X[:, 1:5], dtype=float)  # just use figure 1-5 for basic testing for now
@@ -53,7 +57,7 @@ def fill_nan(data, fill='min'):
 def train(X, y, model='linear', hyperparamter=0.0, verbose=False, data_size=100000,
           step_size=-7, precision=-5, max_iter=500):
     training_size = data_size
-    test_start = 100000  # this number is the start index of test set.
+    test_start = 80000  # this number is the start index of test set.
     X_test = X[test_start:, :]
     y_test = y[test_start:]
 
@@ -234,11 +238,11 @@ def gradient_descent(X, y, stepsize, precision, gradient_function, value_functio
             #             # print(theta)
         if curr_iteration == 4 and verbose:
             print("......")
-        curr_iteration += 1
-    if curr_iteration >= max_iteration and verbose:
-        value = value_function(X, y, theta, hyperparameter)
-        print(f'unable to converge into {precision} after {curr_iteration} iterations, status:')
-        print(f'norm(step): {np.linalg.norm(step)}, value function={value}')
+            curr_iteration += 1
+        if curr_iteration >= max_iteration and verbose:
+            value = value_function(X, y, theta, hyperparameter)
+            print(f'unable to converge step into {precision * stepsize} after {curr_iteration} iterations, status:')
+            print(f'norm(step): {np.linalg.norm(step)}, value function={value}')
     return theta
 
 
@@ -282,7 +286,7 @@ def lasso_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, alpha, ver
 
     if verbose:
         zero_count_reg = d - np.count_nonzero(reg_theta)
-        zero_standard = 10**-4  # change this number to change the definition of zero value
+        zero_standard = 10**-3  # change this number to change the definition of zero value
         zero_count = (np.abs(theta) < zero_standard).sum()
         print(f"\n<lasso regression model> zeros in theta: {zero_count_reg}/{d}")
         print(f"\n<gradient descent> zeros in theta: {zero_count}/{d}")
@@ -501,7 +505,7 @@ if __name__ == '__main__':
         fill = args.fill
     X, y = read_train_data(file_name, 0, fill=fill)  # read the first <num> rows of training data
 
-    training_data_size = 100000
+    training_data_size = 80000
     if args.data is not None:
         training_data_size = args.data
 
