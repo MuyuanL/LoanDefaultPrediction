@@ -48,12 +48,12 @@ def fill_nan(data, fill='min'):
     return data
 
 
-# train using X, y, specified model name, and hyperparamter if appliable
+# train using X, y, specified model name, and hyperparamter if applicable
 # will return the calculated error
 def train(X, y, model='linear', hyperparamter=0.0, verbose=False, data_size=100000,
           step_size=-7, precision=-5, max_iter=500):
     training_size = data_size
-    test_start = 100000
+    test_start = 100000  # this number is the start index of test set.
     X_test = X[test_start:, :]
     y_test = y[test_start:]
 
@@ -79,6 +79,12 @@ def train(X, y, model='linear', hyperparamter=0.0, verbose=False, data_size=1000
         # calls the corresponding function that trains the model using X1, y1
         # and evaluate the performance on X2, y2 (validation error)
         # and evaluate the performance on X_test, y_test (test error)
+        if model == 'naive':
+            train_rmse_naive, validation_rmse_naive, test_rmse_naive\
+                = naive_train(X1, y1, X2, y2, X_test, y_test, verbose=verbose)
+            train_rmse.append(train_rmse_naive)
+            validation_rmse.append(validation_rmse_naive)
+            test_rmse.append(test_rmse_naive)
         if model == 'linear':
             train_rmse_linear, validation_rmse_linear, test_rmse_linear\
                 = linear_reg_train(X1, y1, X2, y2, X_test, y_test, verbose=verbose,
@@ -111,6 +117,49 @@ def train(X, y, model='linear', hyperparamter=0.0, verbose=False, data_size=1000
     avg_validation_rmse = sum(validation_rmse) / k
     avg_test_rmse = sum(test_rmse) / k
     return avg_train_rmse, avg_validation_rmse, avg_test_rmse
+
+
+"""
+Naive model that predicts 0
+"""
+def naive_train(X_train, y_train, X_vali, y_vali, X_test, y_test, verbose):
+    """Training error calculation"""
+    n, d = X_train.shape
+    y_pred = np.zeros((n, 1))
+    y_pred = np.maximum(y_pred, np.zeros((n, 1)))
+    y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
+    train_abs_error = np.subtract(y_pred, y_train)
+    train_mse = np.square(train_abs_error)
+    train_mse_value = np.sum(train_mse) / n
+    train_rmse_value = math.sqrt(train_mse_value)
+
+    """Validation error calculation"""
+    n, d = X_vali.shape
+    y_pred = np.zeros((n, 1))
+    y_pred = np.maximum(y_pred, np.zeros((n, 1)))
+    y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
+    vali_abs_error = np.subtract(y_pred, y_vali)
+    vali_mse = np.square(vali_abs_error)
+    vali_mse_value = np.sum(vali_mse) / n
+    vali_rmse_value = math.sqrt(vali_mse_value)
+
+    """Test error calculation"""
+    n, d = X_test.shape
+    y_pred = np.zeros((n, 1))
+    y_pred = np.maximum(y_pred, np.zeros((n, 1)))
+    y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
+    abs_error = np.subtract(y_pred, y_test)
+    mse = np.square(abs_error)
+    mse_value = np.sum(mse) / n
+    rmse_value = math.sqrt(mse_value)
+
+    if verbose:
+        print()
+        print(f'TRAINING: Root Mean Square Error = {train_rmse_value}')
+        print(f'VALIDATION: Root Mean Square Error = {vali_rmse_value}')
+        print(f'TEST: Root Mean Square Error = {rmse_value}')
+        print()
+    return train_rmse_value, vali_rmse_value, rmse_value
 
 
 """
@@ -174,7 +223,7 @@ def gradient_descent(X, y, stepsize, precision, gradient_function, value_functio
         step = stepsize * grad
         # print(step)
         theta = np.subtract(theta, step)
-        if np.linalg.norm(step) < precision:
+        if curr_iteration > 0 and np.linalg.norm(step) < precision * stepsize:
             if verbose:
                 print(f'converged after {curr_iteration} iterations')
             break
@@ -204,7 +253,7 @@ def lasso_reg_gradient(X, y, theta, alpha):
     grad = np.maximum(pred, np.zeros((n, 1)))
     grad = np.subtract(grad, vector_y)
     grad = np.matmul(np.transpose(X), grad)
-    grad = grad + alpha * theta
+    grad = grad + np.sign(theta) * alpha / 2
     return grad
 
 
@@ -212,27 +261,29 @@ def lasso_reg_value(X, y, theta, alpha):
     n, d = X.shape
     value = np.minimum(np.maximum(X.dot(theta), np.zeros((n, 1))), np.ones((n, 1)) * 100)
     value = 0.5 * np.sum(np.square(np.subtract(value, y)))
-    value = value + 0.5*alpha*np.sum(theta)
+    value = value + abs(0.5*alpha*np.sum(theta))
     return value
 
 
 # train the linear regression model using X_train, y_train
 # test on X_test, y_test, returns train rmse and test rmse
-def lasso_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, alpha, verbose=False, step_size=-7, precision=-5, max_iter=500):
+def lasso_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, alpha, verbose=False, step_size=-7, precision=2, max_iter=500):
     n, d = X_train.shape
 
     # training
-    reg = LinearRegression(fit_intercept=False)
-    # reg = Lasso(alpha=alpha, fit_intercept=False)
+    # reg = LinearRegression(fit_intercept=False)
+    reg = Lasso(alpha=alpha, fit_intercept=False)
     reg.fit(X_train, y_train)
     reg_theta = np.asarray(reg.coef_)
     reg_theta = np.reshape(reg_theta, (-1, 1))
     theta = gradient_descent(X_train, y_train, stepsize=10**step_size, precision=10**precision, max_iter=max_iter,
-                             gradient_function=lasso_reg_gradient, value_function=lasso_reg_value, starting_theta=reg_theta, verbose=verbose)
+                             gradient_function=lasso_reg_gradient, value_function=lasso_reg_value,
+                             starting_theta=reg_theta, hyperparameter=alpha, verbose=verbose)
 
     if verbose:
-        zero_count = d - np.count_nonzero(theta)
         zero_count_reg = d - np.count_nonzero(reg_theta)
+        zero_standard = 10**-4  # change this number to change the definition of zero value
+        zero_count = (np.abs(theta) < zero_standard).sum()
         print(f"\n<lasso regression model> zeros in theta: {zero_count_reg}/{d}")
         print(f"\n<gradient descent> zeros in theta: {zero_count}/{d}")
 
@@ -274,7 +325,6 @@ def lasso_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, alpha, ver
     return train_rmse_value, vali_rmse_value, rmse_value
 
 
-
 """
 This part is for ridge Regression
 """
@@ -286,7 +336,7 @@ def ridge_reg_gradient(X, y, theta, alpha):
     grad = np.maximum(pred, np.zeros((n, 1)))
     grad = np.subtract(grad, vector_y)
     grad = np.matmul(np.transpose(X), grad)
-    grad = grad + np.sign(theta) * alpha / 2
+    grad = grad + alpha * theta
     return grad
 
 
@@ -300,17 +350,18 @@ def ridge_reg_value(X, y, theta, alpha):
 
 # train the linear regression model using X_train, y_train
 # test on X_test, y_test, returns train rmse and test rmse
-def ridge_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, alpha, verbose=False, step_size=-7, precision=-5, max_iter=500):
+def ridge_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, alpha, verbose=False, step_size=-7, precision=2, max_iter=500):
     n, d = X_train.shape
 
     # training
-    # reg = Ridge(alpha=alpha, fit_intercept=False)
-    reg = LinearRegression(fit_intercept=False)
+    reg = Ridge(alpha=alpha, fit_intercept=False)
+    # reg = LinearRegression(fit_intercept=False)
     reg.fit(X_train, y_train)
     reg_theta = np.asarray(reg.coef_)
     reg_theta = np.reshape(reg_theta, (-1, 1))
     theta = gradient_descent(X_train, y_train, stepsize=10**step_size, precision=10**precision, max_iter=max_iter,
-                             gradient_function=ridge_reg_gradient, value_function=ridge_reg_value, starting_theta=reg_theta, verbose=verbose)
+                             gradient_function=ridge_reg_gradient, value_function=ridge_reg_value, starting_theta=reg_theta,
+                             hyperparameter=alpha, verbose=verbose)
 
     """Training error calculation"""
     y_pred = X_train.dot(theta)
@@ -372,7 +423,7 @@ def linear_reg_value(X, y, theta, alpha=0):
 
 
 # train the linear regression model using X_train, y_train
-def linear_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, verbose=False, step_size=-7, precision=-5, max_iter=500):
+def linear_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, verbose=False, step_size=-7, precision=2, max_iter=500):
     n, d = X_train.shape
 
     # training
@@ -430,6 +481,7 @@ if __name__ == '__main__':
     parser.add_argument("-r", "--ridge", type=float, help="run ridge regression model with hyperparameter")
     parser.add_argument("-a", "--lasso", type=float, help="run LASSO regression model with hyperparameter")
     parser.add_argument("-s", "--svr", type=float, help="run SVR model with SVR as C")
+    parser.add_argument("--naive", help="run naive model which always predicts 0", action="store_true")
     parser.add_argument("-v", "--verbose", help="run with debug output", action="store_true")
     parser.add_argument("-f", "--file", help="data file path. Default is \'train_v2.csv\'")
     parser.add_argument("-n", "--fill", help="method to fill NaN value", choices=["mean", "min", "max", "median"])
@@ -454,45 +506,54 @@ if __name__ == '__main__':
         training_data_size = args.data
 
     step = -7 if args.step is None else args.step
-    precision = -5 if args.precision is None else args.precision
+    precision = 2 if args.precision is None else args.precision
     max_iter = 500 if args.maxiter is None else args.maxiter
 
+    if args.naive:
+        train_err, valid_err, test_err = train(X, y, model='naive', verbose=args.verbose, data_size=training_data_size,
+                                               step_size=step, precision=precision, max_iter=max_iter)
+        print('=====Result=====')
+        print(f'model=naive, fill={fill}, training_size={training_data_size}')
+        print(f'training rmse:  \t{train_err}')
+        print(f'validation rmse:\t{valid_err}')
+        print(f'test rmse:      \t{test_err}')
+        print('================\n')
     if args.linear:
         train_err, valid_err, test_err = train(X, y, model='linear', verbose=args.verbose, data_size=training_data_size,
                                                step_size=step, precision=precision, max_iter=max_iter)
         print('=====Result=====')
-        print(f'model=linear, fill={fill}')
-        print(f'training rmse:\t{train_err}')
+        print(f'model=linear, fill={fill}, training_size={training_data_size}')
+        print(f'training rmse:  \t{train_err}')
         print(f'validation rmse:\t{valid_err}')
-        print(f'test rmse:\t{test_err}')
-        print('================')
+        print(f'test rmse:      \t{test_err}')
+        print('================\n')
     if args.ridge is not None and args.ridge >= 0:
         train_err, valid_err, test_err = train(X, y, model='ridge', hyperparamter=args.ridge, verbose=args.verbose,
                                                data_size=training_data_size, step_size=step, precision=precision, max_iter=max_iter)
         print('=======Result=======')
-        print(f'model=ridge, fill={fill}, lambda={args.ridge}')
-        print(f'training rmse:\t{train_err}')
+        print(f'model=ridge, fill={fill}, lambda={args.ridge}, training_size={training_data_size}')
+        print(f'training rmse:  \t{train_err}')
         print(f'validation rmse:\t{valid_err}')
-        print(f'test rmse:\t{test_err}')
-        print('====================')
+        print(f'test rmse:      \t{test_err}')
+        print('====================\n')
     if args.lasso is not None and args.lasso >= 0:
         train_err, valid_err, test_err = train(X, y, model='lasso', hyperparamter=args.lasso, verbose=args.verbose,
                                                data_size=training_data_size, step_size=step, precision=precision, max_iter=max_iter)
         print('=======Result=======')
-        print(f'model=lasso, fill={fill}, lambda={args.lasso}')
-        print(f'training rmse:\t{train_err}')
+        print(f'model=lasso, fill={fill}, lambda={args.lasso}, training_size={training_data_size}')
+        print(f'training rmse:  \t{train_err}')
         print(f'validation rmse:\t{valid_err}')
-        print(f'test rmse:\t{test_err}')
-        print('====================')
+        print(f'test rmse:      \t{test_err}')
+        print('====================\n')
 
     if args.svr is not None:
         train_err, valid_err, test_err = train(X, y, model='svr', hyperparamter=args.svr, verbose=args.verbose,
                                                data_size=training_data_size)
         print('=======Result=======')
         print(f'model=svr, fill={fill}, C={args.svr}')
-        print(f'training rmse:\t{train_err}')
+        print(f'training rmse:  \t{train_err}')
         print(f'validation rmse:\t{valid_err}')
-        print(f'test rmse:\t{test_err}')
-        print('====================')
+        print(f'test rmse:      \t{test_err}')
+        print('====================\n')
 
 
