@@ -222,6 +222,7 @@ def gradient_descent(X, y, stepsize, precision, gradient_function, value_functio
 
     max_iteration = max_iter
     curr_iteration = 0
+    step = 0
     while curr_iteration < max_iteration:
         grad = gradient_function(X, y, theta, hyperparameter)
         step = stepsize * grad
@@ -238,11 +239,11 @@ def gradient_descent(X, y, stepsize, precision, gradient_function, value_functio
             #             # print(theta)
         if curr_iteration == 4 and verbose:
             print("......")
-            curr_iteration += 1
-        if curr_iteration >= max_iteration and verbose:
-            value = value_function(X, y, theta, hyperparameter)
-            print(f'unable to converge step into {precision * stepsize} after {curr_iteration} iterations, status:')
-            print(f'norm(step): {np.linalg.norm(step)}, value function={value}')
+        curr_iteration += 1
+    if curr_iteration >= max_iteration and verbose:
+        value = value_function(X, y, theta, hyperparameter)
+        print(f'unable to converge step into {precision * stepsize} after {curr_iteration} iterations, status:')
+        print(f'norm(step): {np.linalg.norm(step)}, value function={value}')
     return theta
 
 
