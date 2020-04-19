@@ -1,0 +1,76 @@
+=====Result=====
+model=linear, fill=mean, training_size=80000
+training rmse:          4.158631903282471
+validation rmse:        4.212606521438016
+test rmse:              4.254349171941908
+================
+
+
+Ridge
+
+=======Result=======
+model=ridge, fill=mean, lambda=5000.0, training_size=80000
+training rmse:          4.313633287581549
+validation rmse:        4.315657497739895
+test rmse:              4.3304159403522045
+=======Result=======
+model=ridge, fill=mean, lambda=2500.0, training_size=80000
+training rmse:          4.31234862127588
+validation rmse:        4.315426567375313
+test rmse:              4.330215846005518
+====================
+
+===========================Result=======
+model=ridge, fill=mean, lambda=500.0, training_size=80000
+training rmse:          4.308082095736765
+validation rmse:        4.3147617805817005
+test rmse:              4.329202204868803*
+====================
+=======Result=======
+model=ridge, fill=mean, lambda=50.0, training_size=80000
+training rmse:          4.301405612130707
+validation rmse:        4.315968147341293
+test rmse:              4.329270400363001
+====================
+=======Result=======
+model=ridge, fill=mean, lambda=5.0, training_size=80000
+training rmse:          4.294925615206661
+validation rmse:        4.318595605014462
+test rmse:              4.330680263638525
+====================
+( rigde will converge in 1 iteration as the steps are all very small)
+
+Lasso
+=======Result=======
+model=lasso, fill=mean, lambda=5e-06, training_size=80000
+training rmse:          4.289259169101101
+validation rmse:        4.316473589333206
+test rmse:              4.342319677270371
+====================
+
+=======Result=======
+model=lasso, fill=mean, lambda=0.0005, training_size=80000
+training rmse:          4.301596118557624
+validation rmse:        4.3124672511663045
+test rmse:              4.3253492593551695*
+====================
+=======Result=======
+model=lasso, fill=mean, lambda=0.05, training_size=80000
+training rmse:          4.315230216724855
+validation rmse:        4.3161009491516165
+test rmse:              4.330543536975535
+=================
+
+=======Result=======
+model=lasso, fill=mean, lambda=5.0, training_size=80000
+training rmse:          4.31532854544671
+validation rmse:        4.316137000776863
+test rmse:              4.330649668867714
+====================
+
+=======Result=======
+model=lasso, fill=mean, lambda=500.0, training_size=80000
+training rmse:          4.316264883038703
+validation rmse:        4.316509821244327
+test rmse:              4.3311041451362
+====================
