@@ -3,10 +3,11 @@ import numpy as np
 import math
 import sys
 import argparse
+import liblinearutil
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import Lasso
-
+# For SVR model, you need to change C-value manually in line 182
 
 # read the first nrows rows of training data
 # to read the whole file set nrows = 0
@@ -171,10 +172,23 @@ This part is for SVR
 """
 def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose):
     """TODO: Train the model using X_train, y_train, and c_value"""
+    y1=np.squeeze(y_train)
+    y2=np.squeeze(y_vali)
+    y3=np.squeeze(y_test)
+    
+#    scaler = StandardScaler()
+#    scaler=MinMaxScaler(feature_range=(0, 1))
+#    X_train = scaler.fit_transform(X_train)
+    modeltrained = liblinearutil.train(y1, X_train, '-s 11 -c 0.0001')
+#training rmse
+     
 
     """Training error calculation"""
     n, d = X_train.shape
-    y_pred = np.zeros((n, 1))  # TODO: replace the right side with your prediction on X_train
+    p_label, p_acc, p_val = liblinearutil.predict(y1, X_train, modeltrained)
+    pred_y = np.array(p_label)
+    y_pred =  np.reshape(pred_y,(-1,1)) 
+    print(y_pred)# TODO: replace the right side with your prediction on X_train
     y_pred = np.maximum(y_pred, np.zeros((n, 1)))
     y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
     train_abs_error = np.subtract(y_pred, y_train)
@@ -184,7 +198,9 @@ def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose
 
     """Validation error calculation"""
     n, d = X_vali.shape
-    y_pred = np.zeros((n, 1))  # TODO: replace the right side with your prediction on X_vali
+    p_label, p_acc, p_val = liblinearutil.predict(y2, X_vali, modeltrained)
+    pred_y = np.array(p_label)
+    y_pred =  np.reshape(pred_y,(-1,1)) # TODO: replace the right side with your prediction on X_vali
     y_pred = np.maximum(y_pred, np.zeros((n, 1)))
     y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
     vali_abs_error = np.subtract(y_pred, y_vali)
@@ -194,7 +210,10 @@ def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose
 
     """Test error calculation"""
     n, d = X_test.shape
-    y_pred = np.zeros((n, 1))  # TODO: replace the right side with your prediction on X_test
+    p_label, p_acc, p_val = liblinearutil.predict(y3, X_test, modeltrained)
+    pred_y = np.array(p_label)
+    y_pred =  np.reshape(pred_y,(-1,1))
+# TODO: replace the right side with your prediction on X_test
     y_pred = np.maximum(y_pred, np.zeros((n, 1)))
     y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
     abs_error = np.subtract(y_pred, y_test)
@@ -510,7 +529,7 @@ if __name__ == '__main__':
     if args.data is not None:
         training_data_size = args.data
 
-    step = -7 if args.step is None else args.step
+    step = -8 if args.step is None else args.step
     precision = 2 if args.precision is None else args.precision
     max_iter = 500 if args.maxiter is None else args.maxiter
 
@@ -560,5 +579,3 @@ if __name__ == '__main__':
         print(f'validation rmse:\t{valid_err}')
         print(f'test rmse:      \t{test_err}')
         print('====================\n')
-
-
