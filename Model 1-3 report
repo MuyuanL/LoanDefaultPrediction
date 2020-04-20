@@ -74,3 +74,77 @@ training rmse:          4.316264883038703
 validation rmse:        4.316509821244327
 test rmse:              4.3311041451362
 ====================
+
+SVR
+
+SVR model 
+* is the minimum test rmse
+=======Result=======
+model=svr, fill=min, C=0.00001
+training rmse:          4.316785512947751
+validation rmse:        4.316919910205902
+test rmse:              4.330981135569085
+====================
+=======Result=======
+model=svr, fill=min, C=0.0001
+training rmse:          4.314197448728777
+validation rmse:        4.31644815794903
+test rmse:              4.330454657418286
+====================
+=======Result=======
+model=svr, fill=min, C=0.001
+training rmse:          4.308548269007443
+validation rmse:        4.3158852264085175
+test rmse:              4.32950892342531*
+====================
+
+=======Result=======
+model=svr, fill=min, C=0.01
+training rmse:          4.301890295010447
+validation rmse:        4.317357985474178
+test rmse:              4.330035774147541
+====================
+=======Result=======
+model=svr, fill=min, C=0.1
+training rmse:          4.295188843631086
+validation rmse:        4.319493286808141
+test rmse:              4.331580607464683
+====================
+=======Result=======
+model=svr, fill=min, C=1.0
+training rmse:          4.287879968708995
+validation rmse:        4.3191734587546975
+test rmse:              4.3345344559787975
+====================
+=======Result=======
+model=svr, fill=mean, C=1e-05
+training rmse:          4.316921827392544
+validation rmse:        4.317015152442382
+test rmse:              4.33110399557013
+====================
+=======Result=======
+model=svr, fill=mean, C=0.0001
+training rmse:          4.314407225903506
+validation rmse:        4.316402304360711
+test rmse:              4.330551297249967
+====================
+
+=======Result=======
+model=svr, fill=mean, C=0.001
+training rmse:          4.304057335454222
+validation rmse:        4.315973954140703
+test rmse:              4.329093542049737*
+====================
+=======Result=======
+model=svr, fill=mean, C=0.01
+training rmse:          4.302225924401489
+validation rmse:        4.316814997825183
+test rmse:              4.329570563294236
+====================
+
+=======Result=======
+model=svr, fill=mean, C=0.1
+training rmse:          4.2957958394625475
+validation rmse:        4.319713272841428
+test rmse:              4.3312588311524305
+=================
