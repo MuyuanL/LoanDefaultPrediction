@@ -176,9 +176,7 @@ def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose
     y2=np.squeeze(y_vali)
     y3=np.squeeze(y_test)
     
-#    scaler = StandardScaler()
-#    scaler=MinMaxScaler(feature_range=(0, 1))
-#    X_train = scaler.fit_transform(X_train)
+
     modeltrained = liblinearutil.train(y1, X_train, '-s 11 -c 0.0001')
 #training rmse
      
@@ -188,7 +186,7 @@ def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose
     p_label, p_acc, p_val = liblinearutil.predict(y1, X_train, modeltrained)
     pred_y = np.array(p_label)
     y_pred =  np.reshape(pred_y,(-1,1)) 
-    print(y_pred)# TODO: replace the right side with your prediction on X_train
+    
     y_pred = np.maximum(y_pred, np.zeros((n, 1)))
     y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
     train_abs_error = np.subtract(y_pred, y_train)
@@ -213,7 +211,7 @@ def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose
     p_label, p_acc, p_val = liblinearutil.predict(y3, X_test, modeltrained)
     pred_y = np.array(p_label)
     y_pred =  np.reshape(pred_y,(-1,1))
-# TODO: replace the right side with your prediction on X_test
+
     y_pred = np.maximum(y_pred, np.zeros((n, 1)))
     y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
     abs_error = np.subtract(y_pred, y_test)
