@@ -181,11 +181,11 @@ def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose
     y3=np.squeeze(y_test)
 
 
-    modeltrained = liblinearutil.train(y1, X_train, f'-s 11 -c {c_value}')
+    modeltrained = liblinearutil.train(y1, X_train, f'-s 11 -c {c_value} -q')
 
     """Training error calculation"""
     n, d = X_train.shape
-    p_label, p_acc, p_val = liblinearutil.predict(y1, X_train, modeltrained)
+    p_label, p_acc, p_val = liblinearutil.predict(y1, X_train, modeltrained,'-q')
     pred_y = np.array(p_label)
     y_pred =  np.reshape(pred_y,(-1,1))
 
@@ -198,7 +198,7 @@ def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose
 
     """Validation error calculation"""
     n, d = X_vali.shape
-    p_label, p_acc, p_val = liblinearutil.predict(y2, X_vali, modeltrained)
+    p_label, p_acc, p_val = liblinearutil.predict(y2, X_vali, modeltrained,'-q')
     pred_y = np.array(p_label)
     y_pred =  np.reshape(pred_y,(-1,1)) # TODO: replace the right side with your prediction on X_vali
     y_pred = np.maximum(y_pred, np.zeros((n, 1)))
@@ -210,7 +210,7 @@ def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose
 
     """Test error calculation"""
     n, d = X_test.shape
-    p_label, p_acc, p_val = liblinearutil.predict(y3, X_test, modeltrained)
+    p_label, p_acc, p_val = liblinearutil.predict(y3, X_test, modeltrained,'-q')
     pred_y = np.array(p_label)
     y_pred =  np.reshape(pred_y,(-1,1))
 
@@ -582,5 +582,4 @@ if __name__ == '__main__':
         print(f'validation rmse:\t{valid_err}')
         print(f'test rmse:      \t{test_err}')
         print('====================\n')
-
 
