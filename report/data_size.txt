@@ -41,3 +41,99 @@ training rmse:  	3.4349659776258767
 validation rmse:	3.968620110811546
 test rmse:      	4.6822359527834605
 ================
+
+
+# Rdige Regression, lambda=2500, fixed test set, min for NaN
+=====Result=====
+model=ridge, fill=min, lambda=2500.0, training_size=80000
+training rmse:  	4.16206642298835
+validation rmse:	4.210178724173539
+test rmse:      	4.25121951113377
+================
+model=ridge, fill=min, lambda=2500.0, training_size=70000
+training rmse:  	4.15212855812147
+validation rmse:	4.210453259598705
+test rmse:      	4.254086006854052
+====================
+model=ridge, fill=min, lambda=2500.0, training_size=60000
+training rmse:  	4.122650459320205
+validation rmse:	4.206766604076337
+test rmse:      	4.259073066891157
+====================
+model=ridge, fill=min, lambda=2500.0, training_size=50000
+training rmse:  	4.1442258791591575
+validation rmse:	4.218427900265567
+test rmse:      	4.273174645946338
+====================
+model=ridge, fill=min, lambda=2500.0, training_size=40000
+training rmse:  	4.068403140139352
+validation rmse:	4.152794238395667
+test rmse:      	4.359510739427067
+====================
+model=ridge, fill=min, lambda=2500.0, training_size=30000
+training rmse:  	4.02279108335738
+validation rmse:	4.151943546136832
+test rmse:      	4.379145086249213
+====================
+model=ridge, fill=min, lambda=2500.0, training_size=20000
+training rmse:  	3.7635589202782023
+validation rmse:	3.955304897110114
+test rmse:      	4.549126724917961
+====================
+model=ridge, fill=min, lambda=2500.0, training_size=10000
+training rmse:  	3.4538155690689423
+validation rmse:	3.9254241286035496
+test rmse:      	4.649202328121491
+====================
+
+
+# LASSO Regression, lambda=0.3, fixed test set, min for NaN
+=====Result=====
+model=lasso, fill=min, lambda=0.3, training_size=80000
+training rmse:  	4.157152416377617
+validation rmse:	4.2103780782108355
+test rmse:      	4.251689269903238
+avg non-zero values: 674.2 / 755
+====================
+model=lasso, fill=min, lambda=0.3, training_size=70000
+training rmse:  	4.146979245873035
+validation rmse:	4.2122711098072285
+test rmse:      	4.254214004733399
+avg non-zero values: 675.4 / 755
+====================
+model=lasso, fill=min, lambda=0.3, training_size=60000
+training rmse:  	4.116311630925374
+validation rmse:	4.204680955835064
+test rmse:      	4.2614673590854935
+avg non-zero values: 678.4 / 755
+====================
+model=lasso, fill=min, lambda=0.3, training_size=50000
+training rmse:  	4.137450923923359
+validation rmse:	4.217381971908245
+test rmse:      	4.276062436852152
+avg non-zero values: 682.8 / 755
+====================
+model=lasso, fill=min, lambda=0.3, training_size=40000
+training rmse:  	4.061899315579877
+validation rmse:	4.153661741506443
+test rmse:      	4.365621014531593
+avg non-zero values: 698.0 / 755
+====================
+model=lasso, fill=min, lambda=0.3, training_size=30000
+training rmse:  	4.015790981457303
+validation rmse:	4.155845696311646
+test rmse:      	4.387158907940732
+avg non-zero values: 697.2 / 755
+====================
+model=lasso, fill=min, lambda=0.3, training_size=20000
+training rmse:  	3.7548486883138663
+validation rmse:	3.9720674120777546
+test rmse:      	4.564805809430442
+avg non-zero values: 702.4 / 755
+====================
+model=lasso, fill=min, lambda=0.3, training_size=10000
+training rmse:  	3.4364259601269134
+validation rmse:	3.969069585319089
+test rmse:      	4.681458698818533
+avg non-zero values: 722.2 / 755
+====================

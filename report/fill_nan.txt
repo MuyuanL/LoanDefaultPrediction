@@ -1,5 +1,5 @@
 Linear
-
+=====Result=====
 model=linear, fill=min, training_size=80000
 training rmse:  	4.155686472587597
 validation rmse:	4.209039962709344
@@ -42,3 +42,18 @@ validation rmse:	4.213605420984837
 test rmse:      	4.2536321434304005
 LASSO: avg non-zero values: 671.8 / 755
 ====================
+
+
+Ridge lambda=2500
+=====Result=====
+model=ridge, fill=min, lambda=2500.0, training_size=80000
+training rmse:  	4.16206642298835
+validation rmse:	4.210178724173539
+test rmse:      	4.25121951113377
+====================
+model=ridge, fill=mean, lambda=2500.0, training_size=80000
+training rmse:  	4.1647731944856785
+validation rmse:	4.213299991832176
+test rmse:      	4.253092280105898
+====================
+

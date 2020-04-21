@@ -3,11 +3,11 @@ import numpy as np
 import math
 import sys
 import argparse
-import liblinearutil
 from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import Ridge
-from sklearn.linear_model import Lasso
-# For SVR model, you need to change C-value manually in line 182
+import liblinearutil
+# from sklearn.linear_model import Ridge
+# from sklearn.linear_model import Lasso
+
 
 # read the first nrows rows of training data
 # to read the whole file set nrows = 0
@@ -70,6 +70,7 @@ def train(X, y, model='linear', hyperparamter=0.0, verbose=False, data_size=1000
     train_rmse = []
     validation_rmse = []
     test_rmse = []
+    non_zeros = []
     # divide them into training set (X1, y1) and test set(X2, y2)
     for i in range(k):
         n = len(X)
@@ -105,12 +106,13 @@ def train(X, y, model='linear', hyperparamter=0.0, verbose=False, data_size=1000
             validation_rmse.append(validation_rmse_ridge)
             test_rmse.append(test_rmse_ridge)
         elif model == 'lasso':
-            train_rmse_lasso, validation_rmse_lasso, test_rmse_lasso \
+            train_rmse_lasso, validation_rmse_lasso, test_rmse_lasso, non_zero \
                 = lasso_reg_train(X1, y1, X2, y2, X_test, y_test, hyperparamter, verbose=verbose,
                                   step_size=step_size, precision=precision, max_iter=max_iter)
             train_rmse.append(train_rmse_lasso)
             validation_rmse.append(validation_rmse_lasso)
             test_rmse.append(test_rmse_lasso)
+            non_zeros.append(non_zero)
         elif model == 'svr':
             train_rmse_svr, validation_rmse_svr, test_rmse_svr \
                 = svr_train(X1, y1, X2, y2, X_test, y_test, hyperparamter, verbose=verbose)
@@ -121,6 +123,9 @@ def train(X, y, model='linear', hyperparamter=0.0, verbose=False, data_size=1000
     avg_train_rmse = sum(train_rmse) / k
     avg_validation_rmse = sum(validation_rmse) / k
     avg_test_rmse = sum(test_rmse) / k
+    if model == 'lasso':
+        avg_non_zero = sum(non_zeros) / k
+        print(f"LASSO: avg non-zero values: {avg_non_zero} / {d}")
     return avg_train_rmse, avg_validation_rmse, avg_test_rmse
 
 
@@ -171,22 +176,19 @@ def naive_train(X_train, y_train, X_vali, y_vali, X_test, y_test, verbose):
 This part is for SVR
 """
 def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose):
-    """TODO: Train the model using X_train, y_train, and c_value"""
     y1=np.squeeze(y_train)
     y2=np.squeeze(y_vali)
     y3=np.squeeze(y_test)
-    
 
-    modeltrained = liblinearutil.train(y1, X_train, '-s 11 -c 0.0001')
-#training rmse
-     
+
+    modeltrained = liblinearutil.train(y1, X_train, f'-s 11 -c {c_value}')
 
     """Training error calculation"""
     n, d = X_train.shape
     p_label, p_acc, p_val = liblinearutil.predict(y1, X_train, modeltrained)
     pred_y = np.array(p_label)
-    y_pred =  np.reshape(pred_y,(-1,1)) 
-    
+    y_pred =  np.reshape(pred_y,(-1,1))
+
     y_pred = np.maximum(y_pred, np.zeros((n, 1)))
     y_pred = np.minimum(y_pred, np.ones((n, 1)) * 100)
     train_abs_error = np.subtract(y_pred, y_train)
@@ -231,7 +233,7 @@ def svr_train(X_train, y_train, X_vali, y_vali, X_test, y_test, c_value, verbose
 """
 Below are implementation for 3 regression models
 """
-def gradient_descent(X, y, stepsize, precision, gradient_function, value_function, starting_theta=None, hyperparameter=0, max_iter=500, verbose=False):
+def gradient_descent(X, y, stepsize, precision, gradient_function, value_function, starting_theta=None, hyperparameter=0, max_iter=500, verbose=False, shrinkage=False):
     n, d = X.shape
     theta = starting_theta
     if starting_theta is None:
@@ -245,6 +247,9 @@ def gradient_descent(X, y, stepsize, precision, gradient_function, value_functio
         step = stepsize * grad
         # print(step)
         theta = np.subtract(theta, step)
+        if shrinkage:
+            theta[np.where((theta >= -hyperparameter/2) & (theta <= hyperparameter/2))] = 0
+
         if curr_iteration > 0 and np.linalg.norm(step) < precision * stepsize:
             if verbose:
                 print(f'converged after {curr_iteration} iterations')
@@ -260,7 +265,7 @@ def gradient_descent(X, y, stepsize, precision, gradient_function, value_functio
     if curr_iteration >= max_iteration and verbose:
         value = value_function(X, y, theta, hyperparameter)
         print(f'unable to converge step into {precision * stepsize} after {curr_iteration} iterations, status:')
-        print(f'norm(step): {np.linalg.norm(step)}, value function={value}')
+        print(f'norm(step): {np.linalg.norm(step)}, \tvalue function={value}')
     return theta
 
 
@@ -293,21 +298,21 @@ def lasso_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, alpha, ver
     n, d = X_train.shape
 
     # training
-    # reg = LinearRegression(fit_intercept=False)
-    reg = Lasso(alpha=alpha, fit_intercept=False)
+    reg = LinearRegression(fit_intercept=False)
+    # reg = Lasso(alpha=alpha, fit_intercept=False)
     reg.fit(X_train, y_train)
     reg_theta = np.asarray(reg.coef_)
     reg_theta = np.reshape(reg_theta, (-1, 1))
     theta = gradient_descent(X_train, y_train, stepsize=10**step_size, precision=10**precision, max_iter=max_iter,
                              gradient_function=lasso_reg_gradient, value_function=lasso_reg_value,
-                             starting_theta=reg_theta, hyperparameter=alpha, verbose=verbose)
+                             starting_theta=reg_theta, hyperparameter=alpha, verbose=verbose, shrinkage=True)
 
+    nzero_count_strict = np.count_nonzero(theta)
     if verbose:
-        zero_count_reg = d - np.count_nonzero(reg_theta)
-        zero_standard = 10**-3  # change this number to change the definition of zero value
-        zero_count = (np.abs(theta) < zero_standard).sum()
-        print(f"\n<lasso regression model> zeros in theta: {zero_count_reg}/{d}")
-        print(f"\n<gradient descent> zeros in theta: {zero_count}/{d}")
+        # zero_standard = 10**-3  # change this number to change the definition of zero value
+        # zero_count = (np.abs(theta) < zero_standard).sum()
+        print(f"\n<lasso regression model> non_zeros in theta: {nzero_count_strict}/{d}")
+        # print(f"\n<gradient descent> zeros in theta: {zero_count}/{d}")
 
     """Training error calculation"""
     y_pred = X_train.dot(theta)
@@ -344,7 +349,7 @@ def lasso_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, alpha, ver
         print(f'VALIDATION: Root Mean Square Error = {vali_rmse_value}')
         print(f'TEST: Root Mean Square Error = {rmse_value}')
         print()
-    return train_rmse_value, vali_rmse_value, rmse_value
+    return train_rmse_value, vali_rmse_value, rmse_value, nzero_count_strict
 
 
 """
@@ -376,8 +381,8 @@ def ridge_reg_train(X_train, y_train, X_vali, y_vali, X_test, y_test, alpha, ver
     n, d = X_train.shape
 
     # training
-    reg = Ridge(alpha=alpha, fit_intercept=False)
-    # reg = LinearRegression(fit_intercept=False)
+    # reg = Ridge(alpha=alpha, fit_intercept=False)
+    reg = LinearRegression(fit_intercept=False)
     reg.fit(X_train, y_train)
     reg_theta = np.asarray(reg.coef_)
     reg_theta = np.reshape(reg_theta, (-1, 1))
@@ -527,7 +532,7 @@ if __name__ == '__main__':
     if args.data is not None:
         training_data_size = args.data
 
-    step = -8 if args.step is None else args.step
+    step = -7 if args.step is None else args.step
     precision = 2 if args.precision is None else args.precision
     max_iter = 500 if args.maxiter is None else args.maxiter
 
@@ -577,3 +582,5 @@ if __name__ == '__main__':
         print(f'validation rmse:\t{valid_err}')
         print(f'test rmse:      \t{test_err}')
         print('====================\n')
+
+

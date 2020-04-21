@@ -1,0 +1,33 @@
+1) External Libraries used:
+pandas, numpy, scikit-learn (sklearn), liblinearutil
+<TODO: insert downloading instructions or upload them into a "libraries" folder>
+
+2) Running instructions:
+Use python 3.6 or above.
+Place the data file "train_v2.csv" under the same directory. (Or set up -f argument illustrated below)
+
+Syntax: ./loandefault.py [-argument [value]?]*
+Use -h or --help to see details.
+
+Choose model and hyperparameter:
+[-l] for linear regression, [-r LAMBDA] for ridge regression, [-a LAMBDA] for LASSO regression, [-s C] for SVR, [--naive] for naive model that only predicts 0
+
+Choose running options:
+[-v] for verbose mode that prints out debugging output. Without -v it will only show the result.
+
+Arguments that overrides default values:
+[-f FILEPATH] by default the data file should be in the same directory and named "train_v2.csv". this option overrides the path of the data file
+
+[-n [min|mean|max|median]] by default all NaN's in the data would be replaced with the minimum value of the same column. Choose one of the four options above to set the way to fill in missing data
+
+[--step N] [--precision N] [--maxiter N] changes the setting for gradient descent used for linear regression, ridge regression and LASSO regression. The default value should be working fine with most hyperparamters.
+
+[-d DATA] changes the size of the training data. By default it would be 80000, as data after 80000 will be used as test set.
+
+
+Examples:
+./loandefault.py -l -v -n mean -d 50000
+Running linear regression model in verbose mode. Fill in missing values with average of the same column, and use 50000 data for training.
+
+./loandefault.py -a 0.1 -v
+Running LASSO regression model in verbose mode with lambda set to 0.1, by default missing values will be filled with minimum values from the same column, and the training set size is 80000.

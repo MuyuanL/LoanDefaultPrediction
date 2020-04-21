@@ -1,0 +1,77 @@
+=====Result=====
+(Linear)
+model=ridge, fill=min, lambda=0, training_size=80000
+training rmse:  	4.155686472587597
+validation rmse:	4.209039962709344
+test rmse:      	4.252407476950802
+====================
+model=ridge, fill=min, lambda=1.0, training_size=80000
+training rmse:  	4.15568833315431
+validation rmse:	4.209041033033733
+test rmse:      	4.252409465392182
+====================
+model=ridge, fill=min, lambda=10.0, training_size=80000
+training rmse:  	4.155706882860267
+validation rmse:	4.209043622495366
+test rmse:      	4.25239994428037
+====================
+model=ridge, fill=min, lambda=100.0, training_size=80000
+training rmse:  	4.155892942821122
+validation rmse:	4.2090643339207805
+test rmse:      	4.252307692098
+====================
+model=ridge, fill=min, lambda=500.0, training_size=80000
+training rmse:  	4.156764360745943
+validation rmse:	4.2092087855913025
+test rmse:      	4.251947461672478
+====================
+model=ridge, fill=min, lambda=1000.0, training_size=80000
+training rmse:  	4.157949562928768
+validation rmse:	4.209500640421043
+test rmse:      	4.251604229435811
+====================
+model=ridge, fill=min, lambda=1500.0, training_size=80000
+training rmse:  	4.159233606863575
+validation rmse:	4.209907758872984
+test rmse:      	4.251373658619997
+====================
+model=ridge, fill=min, lambda=2000.0, training_size=80000
+training rmse:  	4.160608365323769
+validation rmse:	4.210217035879632
+test rmse:      	4.251246751537961
+====================
+model=ridge, fill=min, lambda=2500.0, training_size=80000
+training rmse:  	4.16206642298835
+validation rmse:	4.210178724173539
+test rmse:      	4.25121951113377
+====================
+model=ridge, fill=min, lambda=3000.0, training_size=80000
+training rmse:  	4.163600057590597
+validation rmse:	4.210265089165038
+test rmse:      	4.251285303580741
+====================
+model=ridge, fill=min, lambda=4000.0, training_size=80000
+training rmse:  	4.166867882846942
+validation rmse:	4.210775068182353
+test rmse:      	4.25167140243923
+====================
+model=ridge, fill=min, lambda=4500.0, training_size=80000
+training rmse:  	4.16858926642233
+validation rmse:	4.211182825500236
+test rmse:      	4.251977370436895
+====================
+model=ridge, fill=min, lambda=5000.0, training_size=80000
+training rmse:  	4.170360942612127
+validation rmse:	4.211682527492178
+test rmse:      	4.252351014278554
+====================
+model=ridge, fill=min, lambda=10000.0, training_size=80000
+training rmse:  	4.189784194686572
+validation rmse:	4.220429578471358
+test rmse:      	4.2588879115106435
+====================
+model=ridge, fill=min, lambda=100000.0, training_size=80000
+training rmse:  	4.31492623122441
+validation rmse:	4.315042031460011
+test rmse:      	4.330292458873932
+====================
