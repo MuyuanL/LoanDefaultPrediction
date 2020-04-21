@@ -1,0 +1,71 @@
+# Fixed 500 iterations
+# Use min to fill NaN
+
+=======Result=======
+(Linear Regression)
+model=lasso, fill=min, lambda=0.0, training_size=80000
+training rmse:  	4.155686472587597
+validation rmse:	4.209039962709344
+test rmse:      	4.252407476950802
+avg non-zero values: 755.0 / 755
+====================
+model=lasso, fill=min, lambda=0.01, training_size=80000
+training rmse:  	4.155691837178113
+validation rmse:	4.209042749944436
+test rmse:      	4.252412496471051
+avg non-zero values: 749.6 / 755
+====================
+model=lasso, fill=min, lambda=0.05, training_size=80000
+training rmse:  	4.15570177270957
+validation rmse:	4.208986118590446
+test rmse:      	4.252397164329492
+avg non-zero values: 736.2 / 755
+====================
+model=lasso, fill=min, lambda=0.1, training_size=80000
+training rmse:  	4.1558189084231
+validation rmse:	4.2090361731616035
+test rmse:      	4.252438351325081
+avg non-zero values: 721.6 / 755
+====================
+model=lasso, fill=min, lambda=0.2, training_size=80000
+training rmse:  	4.1561596770872855
+validation rmse:	4.209164692784943
+test rmse:      	4.252358996907281
+avg non-zero values: 698.6 / 755
+====================
+model=lasso, fill=min, lambda=0.3, training_size=80000
+training rmse:  	4.157152416377617
+validation rmse:	4.2103780782108355
+test rmse:      	4.251689269903238
+avg non-zero values: 674.2 / 755
+====================
+model=lasso, fill=min, lambda=0.4, training_size=80000
+training rmse:  	4.158413220972754
+validation rmse:	4.211560697212394
+test rmse:      	4.252175455531117
+avg non-zero values: 654.6 / 755
+====================
+model=lasso, fill=min, lambda=0.5, training_size=80000
+training rmse:  	4.159462767681154
+validation rmse:	4.211993389468683
+test rmse:      	4.252380850401946
+avg non-zero values: 640.6 / 755
+====================
+model=lasso, fill=min, lambda=1.0, training_size=80000
+training rmse:  	4.167452519224673
+validation rmse:	4.216519531238101
+test rmse:      	4.256409404607032
+avg non-zero values: 584.0 / 755
+====================
+model=lasso, fill=min, lambda=3.0, training_size=80000
+training rmse:  	4.218044383045445
+validation rmse:	4.260957047012491
+test rmse:      	4.300395315490256
+avg non-zero values: 486.6 / 755
+====================
+model=lasso, fill=min, lambda=5.0, training_size=80000
+training rmse:  	4.322354017115625
+validation rmse:	4.361009834640873
+test rmse:      	4.402142435258363
+avg non-zero values: 440.8 / 755
+====================

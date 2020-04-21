@@ -1,0 +1,43 @@
+# Linear Regression, fixed test set, min for NaN
+
+=====Result=====
+model=linear, fill=min, training_size=80000
+training rmse:  	4.155686472587597
+validation rmse:	4.209039962709344
+test rmse:      	4.252407476950802
+================
+model=linear, fill=min, training_size=70000
+training rmse:  	4.145589525363147
+validation rmse:	4.210892980522164
+test rmse:      	4.255298860711745
+================
+model=linear, fill=min, training_size=60000
+training rmse:  	4.114779509218186
+validation rmse:	4.203994168014474
+test rmse:      	4.262149461836308
+================
+model=linear, fill=min, training_size=50000
+training rmse:  	4.136067718364432
+validation rmse:	4.2169701903127885
+test rmse:      	4.276680411971052
+================
+model=linear, fill=min, training_size=40000
+training rmse:  	4.0605497812433
+validation rmse:	4.153496495910811
+test rmse:      	4.3653332732462005
+================
+model=linear, fill=min, training_size=30000
+training rmse:  	4.014299028370577
+validation rmse:	4.1561115248503935
+test rmse:      	4.387351521184522
+================
+model=linear, fill=min, training_size=20000
+training rmse:  	3.7529288949773125
+validation rmse:	3.970203144215091
+test rmse:      	4.564848505717292
+================
+model=linear, fill=min, training_size=10000
+training rmse:  	3.4349659776258767
+validation rmse:	3.968620110811546
+test rmse:      	4.6822359527834605
+================

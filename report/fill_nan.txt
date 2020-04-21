@@ -1,0 +1,44 @@
+Linear
+
+model=linear, fill=min, training_size=80000
+training rmse:  	4.155686472587597
+validation rmse:	4.209039962709344
+test rmse:      	4.252407476950802
+================
+model=linear, fill=mean, training_size=80000
+training rmse:  	4.15863175489258
+validation rmse:	4.2126055793757375
+test rmse:      	4.254349521864259
+================
+
+
+LASSO lambda=0.05
+=====Result=====
+model=lasso, fill=min, lambda=0.05, training_size=80000
+training rmse:  	4.15570177270957
+validation rmse:	4.208986118590446
+test rmse:      	4.252397164329492
+avg non-zero values: 736.2 / 755
+====================
+model=lasso, fill=mean, lambda=0.05, training_size=80000
+training rmse:  	4.158650110536065
+validation rmse:	4.2125598314638335
+test rmse:      	4.254334329539324
+avg non-zero values: 736.0 / 755
+====================
+
+
+LASSO lambda=0.3
+=====Result=====
+model=lasso, fill=min, lambda=0.3, training_size=80000
+training rmse:  	4.157152416377617
+validation rmse:	4.2103780782108355
+test rmse:      	4.251689269903238
+avg non-zero values: 674.2 / 755
+====================
+model=lasso, fill=mean, lambda=0.3, training_size=80000
+training rmse:  	4.1600117573075
+validation rmse:	4.213605420984837
+test rmse:      	4.2536321434304005
+LASSO: avg non-zero values: 671.8 / 755
+====================
