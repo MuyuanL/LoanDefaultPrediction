@@ -15,6 +15,7 @@ Use -h or --help to see details.
 
 Choose model and hyperparameter:
 [-l] for linear regression, [-r LAMBDA] for ridge regression, [-a LAMBDA] for LASSO regression, [-s C] for SVR, [--naive] for naive model that only predicts 0
+(SVR model may take about 30 min for one run)
 
 Choose running options:
 [-v] for verbose mode that prints out debugging output. Without -v it will only show the result.
