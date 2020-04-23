@@ -1,10 +1,10 @@
 1) External Libraries used:
 pandas, numpy, scikit-learn (sklearn), liblinearutil
 
-Libsvm download(include liblinearutil):
-For windows -64 bit users, go to https://www.lfd.uci.edu/~gohlke/pythonlibs/#libsvm, 
-download the libsvm zip file according to your python version(e.g. libsvm‑3.23‑cp34‑cp34m‑win_amd64.whl for python 3.4).Use pip version 19.2 or newer to install the downloaded .whl files.
-Other users please go to official site: https://www.csie.ntu.edu.tw/~cjlin/libsvm/ and find related downloads.
+Liblinear download(include liblinearutil):
+For windows -64 bit users, go to https://www.lfd.uci.edu/~gohlke/pythonlibs/#liblinear 
+download the liblinear file according to your python version(e.g. liblinear-2.30-cp37-cp37m-win_amd64.whl for python 3.7).Use pip version 19.2 or newer to install the downloaded .whl files.
+Other users please go to official site: https://www.csie.ntu.edu.tw/~cjlin/liblinear/ and find related downloads.
 
 2) Running instructions:
 Use python 3.6 or above.
